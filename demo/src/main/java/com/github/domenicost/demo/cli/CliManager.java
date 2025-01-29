@@ -2,13 +2,18 @@ package com.github.domenicost.demo.cli;
 
 import java.util.List;
 import java.util.Scanner;
+
+import com.github.domenicost.demo.db.entity.Role;
 import com.github.domenicost.demo.db.entity.Utente;
+import com.github.domenicost.demo.db.service.RoleServices;
 import com.github.domenicost.demo.db.service.UtenteService;
 
 public class CliManager {
 
     private Scanner scanner;
     private UtenteService utenteService;
+    private RoleServices roleService;
+
     // Costruttore
     public CliManager(UtenteService utenteService) {
 
@@ -30,7 +35,8 @@ public class CliManager {
         System.out.println("6. Visualizza Utenti con Credito +10€");
         System.out.println("7. Visualizza Utenti con Credito positivo ma -10€");
         System.out.println("8. Visualizza Utenti con Nome o Congome NULL");
-        System.out.println("9. Esci");
+        System.out.println("9. Cambia Permessi");
+        System.out.println("10. Esci");
         System.out.println("");
 
         String strValue = scanner.nextLine();
@@ -63,6 +69,10 @@ public class CliManager {
                 userNull();
                 break;
             case 9:
+                cambiaRuolo();
+                break;
+
+            case 10:
                 return;
 
             default:
@@ -143,6 +153,16 @@ public class CliManager {
         int credito = Integer.parseInt(strCredito);
         u.setCredito(credito);
 
+        System.out.println("Permessi: ");
+        List<Role> roles = roleService.findAll();
+        System.out.println(roles);
+        System.out.println("------------------");
+        System.out.print("Inserisci RoleId per assegnare il permesso: ");
+        String strRoleId = scanner.nextLine();
+        Long roleId = Long.parseLong(strRoleId);
+        Role role = roleService.findById(roleId);
+        u.setRole(role);
+
         utenteService.save(u);
     }
 
@@ -151,7 +171,7 @@ public class CliManager {
         System.out.println("delete id:");
         String strId = scanner.nextLine();
         Long id = Long.parseLong(strId);
-        
+
         Utente p = utenteService.findById(id);
 
         if (p != null) {
@@ -182,6 +202,22 @@ public class CliManager {
     private void verificaCreditoDue() {
         List<Utente> creditoPositivo = utenteService.findyByCreditoBetween0And10();
         System.out.println("Utenti con credito positivo ma minore di 10€: " + creditoPositivo);
+    }
+
+    private void cambiaRuolo() {
+        readAll();
+        String strUserId = scanner.nextLine();
+        Long userId = Long.parseLong(strUserId);
+        Utente user = utenteService.findById(userId);
+        System.out.println("Lista Role");
+        List<Role> roles = roleService.findAll();
+        System.out.println(roles);
+        System.out.println("------------------");
+        System.out.print("Inserisci nuova RoleId: ");
+        String strRoleId = scanner.nextLine();
+        Long roleId = Long.parseLong(strRoleId);
+        Role role = roleService.findById(roleId);
+        user.setRole(role);
     }
 
 }
