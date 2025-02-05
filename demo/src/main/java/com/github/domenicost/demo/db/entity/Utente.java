@@ -1,11 +1,15 @@
 package com.github.domenicost.demo.db.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.ManyToMany;
 
 @Entity
 public class Utente {
@@ -30,6 +34,9 @@ public class Utente {
 
     @ManyToOne
     private Role role;
+
+    @ManyToMany
+    private List<SubReddit> subReddit;
 
     // Getter e Setter
     public Long getId() {
@@ -87,6 +94,22 @@ public class Utente {
     public void setRole(Role role) {
         this.role = role;
     }
+
+    public List<SubReddit> getSubReddit() {
+        return subReddit;
+    }
+
+    public void setSubReddit(List<SubReddit> subReddit) {
+        this.subReddit = subReddit;
+    }
+
+    public void addSubReddit(SubReddit subReddit) {
+        if (this.subReddit == null)
+            this.subReddit = new ArrayList<>();
+
+        this.subReddit.add(subReddit);
+    }
+
     // Altro
     @Override
     public String toString() {
@@ -99,6 +122,4 @@ public class Utente {
                 "  credito=" + credito + "\n" +
                 "]";
     }
-
-
 }

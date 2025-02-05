@@ -6,7 +6,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.github.domenicost.demo.cli.CliManager;
-import com.github.domenicost.demo.db.service.RoleServices;
+import com.github.domenicost.demo.db.service.RoleService;
+import com.github.domenicost.demo.db.service.SubRedditService;
 import com.github.domenicost.demo.db.service.UtenteService;
 
 @SpringBootApplication
@@ -16,7 +17,10 @@ public class DemoApplication implements CommandLineRunner {
 	private UtenteService utenteService;
 
 	@Autowired
-	private RoleServices roleService;
+	private RoleService roleService;
+
+	@Autowired
+	private SubRedditService subRedditService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
@@ -24,6 +28,6 @@ public class DemoApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		new CliManager(utenteService, roleService);
+		new CliManager(utenteService, roleService, subRedditService);
 	}
 }

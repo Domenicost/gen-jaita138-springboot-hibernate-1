@@ -8,7 +8,7 @@ import com.github.domenicost.demo.db.entity.Role;
 import com.github.domenicost.demo.db.repo.RoleRepo;
 
 @Service
-public class RoleServices {
+public class RoleService {
 
     @Autowired
     private RoleRepo roleRepo;

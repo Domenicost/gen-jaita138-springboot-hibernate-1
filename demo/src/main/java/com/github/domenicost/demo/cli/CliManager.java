@@ -4,23 +4,26 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.github.domenicost.demo.db.entity.Role;
+import com.github.domenicost.demo.db.entity.SubReddit;
 import com.github.domenicost.demo.db.entity.Utente;
-import com.github.domenicost.demo.db.service.RoleServices;
+import com.github.domenicost.demo.db.service.RoleService;
+import com.github.domenicost.demo.db.service.SubRedditService;
 import com.github.domenicost.demo.db.service.UtenteService;
 
 public class CliManager {
 
     private Scanner scanner;
     private UtenteService utenteService;
-    private RoleServices roleService;
+    private RoleService roleService;
+    private SubRedditService subRedditService;
 
     // Costruttore
-    public CliManager(UtenteService utenteService, RoleServices roleService) {
+    public CliManager(UtenteService utenteService, RoleService roleService, SubRedditService subRedditService) {
 
         scanner = new Scanner(System.in);
         this.utenteService = utenteService;
         this.roleService = roleService;
-
+        this.subRedditService = subRedditService;
         printOptions();
     }
 
@@ -140,7 +143,7 @@ public class CliManager {
         int credito = Integer.parseInt(strCredito);
         utente.setCredito(credito);
 
-        // Blocco Relazionale
+        // BLOCCO RELAZIONE 1aN
         System.out.println("Permessi: ");
         printRoles();
         System.out.print("Inserisci RoleId per assegnare il permesso: ");
@@ -152,6 +155,31 @@ public class CliManager {
         utenteService.save(utente);
         System.out.println("Utente salvato");
         System.out.println();
+
+        // BLOCCO RELAZIONE NaN
+        String hasSubReddit = "y";
+        List<SubReddit> subReddits = subRedditService.findAll();
+        
+        while (hasSubReddit.equals("y")) {
+            System.out.println("has Subreddit? (y/n)");
+            hasSubReddit = scanner.nextLine();
+            if (!hasSubReddit.equals("y")) {
+                utenteService.save(utente);
+                return;
+            }
+
+            System.out.println("Subreddit");
+            subReddits.stream()
+                    .map(o -> o.getId() + ". " + o.getNome() + " " + o.getDescrizione())
+                    .forEach(System.out::println);
+            System.out.println("-------------------------------------");
+            System.out.println("Subreddit id: ");
+            String strSubRedditId = scanner.nextLine();
+            Long subRedditId = Long.parseLong(strSubRedditId);
+            SubReddit subReddit = subRedditService.findById(subRedditId);
+            utente.addSubReddit(subReddit);
+            System.out.println("SubReddit assegnato");
+        }
     }
 
     private void printRoles() {
