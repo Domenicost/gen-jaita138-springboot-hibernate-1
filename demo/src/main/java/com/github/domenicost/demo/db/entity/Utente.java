@@ -97,7 +97,6 @@ public class Utente {
                 "  username=" + username + ",\n" +
                 "  password=" + password + "\n" +
                 "  credito=" + credito + "\n" +
-                "  role=" + role + "\n" +
                 "]";
     }
 

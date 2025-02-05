@@ -15,10 +15,11 @@ public class CliManager {
     private RoleServices roleService;
 
     // Costruttore
-    public CliManager(UtenteService utenteService) {
+    public CliManager(UtenteService utenteService, RoleServices roleService) {
 
         scanner = new Scanner(System.in);
         this.utenteService = utenteService;
+        this.roleService = roleService;
 
         printOptions();
     }
@@ -93,30 +94,9 @@ public class CliManager {
 
     private void insert() {
 
-        Utente u = new Utente();
+        Utente utente = new Utente();
 
-        System.out.println("Nome:");
-        String nome = scanner.nextLine();
-        u.setNome(nome);
-
-        System.out.println("Cognome:");
-        String cognome = scanner.nextLine();
-        u.setCognome(cognome);
-
-        System.out.println("Username:");
-        String username = scanner.nextLine();
-        u.setUsername(username);
-
-        System.out.println("Password:");
-        String password = scanner.nextLine();
-        u.setPassword(password);
-
-        System.out.println("Credito:");
-        String strCredito = scanner.nextLine();
-        int credito = Integer.parseInt(strCredito);
-        u.setCredito(credito);
-
-        utenteService.save(u);
+        save(utente);
     }
 
     private void edit() {
@@ -124,51 +104,65 @@ public class CliManager {
         System.out.println("edit id:");
         String strId = scanner.nextLine();
         Long id = Long.parseLong(strId);
-        Utente u = utenteService.findById(id);
+        Utente utente = utenteService.findById(id);
 
-        if (u == null) {
+        if (utente == null) {
 
             System.out.println("Utente non trovato");
             return;
         }
 
-        System.out.println("Nome: (" + u.getNome() + ")");
+        save(utente);
+    }
+
+    private void save(Utente utente) {
+
+        boolean isInsert = (utente.getId() == null);
+
+        System.out.println("Nome:" + (isInsert ? "" : "(" + utente.getNome() + ")"));
         String nome = scanner.nextLine();
-        u.setNome(nome);
+        utente.setNome(nome);
 
-        System.out.println("Cognome: (" + u.getCognome() + ")");
+        System.out.println("Cognome:" + (isInsert ? "" : "(" + utente.getCognome() + ")"));
         String cognome = scanner.nextLine();
-        u.setCognome(cognome);
+        utente.setCognome(cognome);
 
-        System.out.println("Username: (" + u.getUsername() + ")");
+        System.out.println("Username:" + (isInsert ? "" : "(" + utente.getUsername() + ")"));
         String username = scanner.nextLine();
-        u.setUsername(username);
+        utente.setUsername(username);
 
-        System.out.println("Password: (" + u.getPassword() + ")");
+        System.out.println("Password:" + (isInsert ? "" : "(" + utente.getPassword() + ")"));
         String password = scanner.nextLine();
-        u.setPassword(password);
+        utente.setPassword(password);
 
-        System.out.println("Credito: (" + u.getCredito() + ")");
+        System.out.println("Credito:" + (isInsert ? "" : "(" + utente.getCredito() + ")"));
         String strCredito = scanner.nextLine();
         int credito = Integer.parseInt(strCredito);
-        u.setCredito(credito);
+        utente.setCredito(credito);
 
+        // Blocco Relazionale
         System.out.println("Permessi: ");
-        List<Role> roles = roleService.findAll();
-        System.out.println(roles);
-        System.out.println("------------------");
+        printRoles();
         System.out.print("Inserisci RoleId per assegnare il permesso: ");
         String strRoleId = scanner.nextLine();
         Long roleId = Long.parseLong(strRoleId);
         Role role = roleService.findById(roleId);
-        u.setRole(role);
+        utente.setRole(role);
 
-        utenteService.save(u);
+        utenteService.save(utente);
+        System.out.println("Utente salvato");
+        System.out.println();
+    }
+
+    private void printRoles() {
+        System.out.println("Ruoli: ");
+        System.out.println(roleService.findAll());
+        System.out.println();
     }
 
     private void delete() {
 
-        System.out.println("delete id:");
+        System.out.println("utente id:");
         String strId = scanner.nextLine();
         Long id = Long.parseLong(strId);
 
@@ -179,6 +173,7 @@ public class CliManager {
             System.out.println("Utente " + strId + " eliminato");
         } else
             System.out.println("Utente non trovato");
+
     }
 
     private void searchUser() {
@@ -209,10 +204,7 @@ public class CliManager {
         String strUserId = scanner.nextLine();
         Long userId = Long.parseLong(strUserId);
         Utente user = utenteService.findById(userId);
-        System.out.println("Lista Role");
-        List<Role> roles = roleService.findAll();
-        System.out.println(roles);
-        System.out.println("------------------");
+        printRoles();
         System.out.print("Inserisci nuova RoleId: ");
         String strRoleId = scanner.nextLine();
         Long roleId = Long.parseLong(strRoleId);

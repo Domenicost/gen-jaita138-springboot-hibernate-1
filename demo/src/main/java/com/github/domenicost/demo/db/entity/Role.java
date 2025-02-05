@@ -61,12 +61,10 @@ public class Role {
 
     @Override
     public String toString() {
-
         return "Regole [\n" +
                 "  id=" + id + ",\n" +
                 "  name=" + nome + ",\n" +
                 "  descrizione=" + descrizione + ",\n" +
-                "  users=" + users + ",\n" +
                 "]";
     }
     
